@@ -5,11 +5,11 @@
 SpendLens turns expense exports into a clear report and a structured savings plan for AI agents. Users stay in control: approving research never authorizes a cancellation, purchase or payment.
 
 ## Two pages
-1. **Upload**: drag-and-drop CSV/JSON, multi-file support, currency and amount-sign selection, sample file and sample report.
+1. **Upload**: drag-and-drop PDF/Excel/CSV/JSON, multi-file support, currency and amount-sign selection, sample file and sample report.
 2. **Report**: actual expense totals and categories, top merchants, repeated expenses, likely subscriptions/regular bills, searchable transactions, savings scenarios, printable report and JSON agent plan.
 
 ## Run locally
-No API keys, server or dependencies are required for the web app.
+No API keys or backend are required. PDF.js and SheetJS are bundled locally in `dist/vendor/`.
 
 ```sh
 python3 -m http.server 8000 --directory dist
@@ -17,9 +17,10 @@ python3 -m http.server 8000 --directory dist
 Open http://localhost:8000. Any static host can serve `dist/`, including GitHub Pages (copy the contents to your configured Pages directory).
 
 ```sh
+npm ci
 npm test
 ```
-Requires Node.js 18+ for the tests. The browser app uses ES modules.
+Use Node.js 20+ for development and tests. The browser app uses ES modules.
 
 ## Input format
 CSV (UTF-8, comma or semicolon separated):
@@ -32,7 +33,7 @@ date,merchant,amount,category,type
 
 JSON can be an array of objects or `{ "transactions": [...] }`. Required columns: `date`, `merchant` (or `description`, `payee`, `name`, `vendor`, `details`), `amount`. Optional `category` and `type`. Dates: ISO YYYY-MM-DD or day-first DD/MM/YYYY. Positive expenses is the default. Choose negative bank debits for signed bank exports. Explicit `income`, `salary`, `credit` and `refund` types are excluded. Mixed currencies are not converted: import files in one currency and select it.
 
-PDF/XLSX parsing is not implemented. Export those files to CSV first. Limit: 10 MB total; 30,000 rows per file. Exact-looking duplicate records are retained because they can represent real separate transactions.
+Excel .xlsx and .xls files are read locally across sheets with recognized transaction headers, including Excel date cells. Text PDFs support rows containing date, description and a final amount (optional currency). Scanned/image PDFs require OCR; password-protected PDFs must be unlocked first. PDFs are limited to 100 pages. Bundled PDF.js and SheetJS parsers run locally, without uploading files. Limit: 10 MB total; 30,000 rows per file. Exact-looking duplicate records are retained because they can represent real separate transactions.
 
 ## What is real / what is a prototype
 - Real local processing: parsing, validation, expense categorization, totals, merchant grouping, subscription-name matching, monthly-pattern detection, filtering and export.
@@ -52,3 +53,5 @@ Transactions exist in browser-tab memory and are not uploaded. Reloading clears 
 
 ## Team
 Azan Yesbol Yergaliuly and Omirzak Yerdaulet, Qazaq AI Research University.
+
+Kaspi Gold English PDF statements are recognized automatically (DD.MM.YY, amount-first columns). Outgoing debits use automatic sign detection and KZT currency. Deposits, refunds, and transfers between your own accounts are excluded from expense totals. Expenses represent gross outgoing payments; refunds are reported as excluded rather than netted against purchases. Unsupported dated rows cause an error instead of a partial report.

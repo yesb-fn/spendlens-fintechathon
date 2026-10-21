@@ -1,7 +1,7 @@
 # Technical documentation
 
 ## Data flow
-User CSV/JSON → local parser → normalized transactions → pure analysis → report → user-reviewed JSON export → optional external agent.
+User PDF/Excel/CSV/JSON → local parser → normalized transactions → pure analysis → report → user-reviewed JSON export → optional external agent.
 
 ## Components and core logic
 - CSV state machine supports BOM, quoted delimiters/newlines and escaped quotes. Semicolon format is recognized.
@@ -20,3 +20,5 @@ One currency per report; no FX conversion. No PDF/XLSX input, hosted LLM, live-o
 
 ## Execution evidence
 `npm test` runs deterministic input-to-output checks. In the UI, select “Explore a sample report” to reproduce the fictional multi-month analysis. Export the categorized CSV and agent JSON as inspectable evidence. No real account or external financial action is executed.
+
+PDF and Excel import: dist/importers.js, with bundled local PDF.js and SheetJS dependencies and licenses in dist/vendor. PDF extraction groups text by page position and accepts explicit dated transaction rows; unsupported layouts show an error. No OCR or remote document service.
